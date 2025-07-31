@@ -1,0 +1,151 @@
+[
+  {
+    "model": "talleres.taller",
+    "pk": 1,
+    "fields": {
+      "nombre": "T1",
+      "direccion": "Mercedes entre Real y Ayllon",
+      "telefono": "+5345521411",
+      "email": "t1@taller.com"
+    }
+  },
+  {
+    "model": "talleres.taller",
+    "pk": 2,
+    "fields": {
+      "nombre": "PM",
+      "direccion": "Parque JA",
+      "telefono": "+5345522611",
+      "email": "pm@taller.com"
+    }
+  },
+  {
+    "model": "talleres.taller",
+    "pk": 2,
+    "fields": {
+      "nombre": "Taller Norte",
+      "direccion": "Calle Norte 456, Ciudad",
+      "telefono": "555-5678",
+      "email": "norte@taller.com"
+    }
+  },
+  {
+    "model": "talleres.taller",
+    "pk": 2,
+    "fields": {
+      "nombre": "Taller Norte",
+      "direccion": "Calle Norte 456, Ciudad",
+      "telefono": "555-5678",
+      "email": "norte@taller.com"
+    }
+  },
+  {
+    "model": "talleres.taller",
+    "pk": 2,
+    "fields": {
+      "nombre": "Taller Norte",
+      "direccion": "Calle Norte 456, Ciudad",
+      "telefono": "555-5678",
+      "email": "norte@taller.com"
+    }
+  },
+  {
+    "model": "usuarios.rol",
+    "pk": 1,
+    "fields": {
+      "nombre": "ADMIN",
+      "descripcion": "Administrador del sistema",
+      "permisos_crear": true,
+      "permisos_editar": true,
+      "permisos_eliminar": true,
+      "permisos_ver_logs": true,
+      "permisos_administrar_usuarios": true
+    }
+  },
+  {
+    "model": "usuarios.rol",
+    "pk": 2,
+    "fields": {
+      "nombre": "GERENTE",
+      "descripcion": "Gerente de taller",
+      "permisos_crear": true,
+      "permisos_editar": true,
+      "permisos_eliminar": false,
+      "permisos_ver_logs": true,
+      "permisos_administrar_usuarios": false
+    }
+  },
+  {
+    "model": "usuarios.rol",
+    "pk": 3,
+    "fields": {
+      "nombre": "TECNICO",
+      "descripcion": "Técnico de reparaciones",
+      "permisos_crear": false,
+      "permisos_editar": true,
+      "permisos_eliminar": false,
+      "permisos_ver_logs": false,
+      "permisos_administrar_usuarios": false
+    }
+  },
+  {
+    "model": "inventario.etiqueta",
+    "pk": 1,
+    "fields": {"nombre": "Pantallas"}
+  },
+  {
+    "model": "inventario.etiqueta",
+    "pk": 2,
+    "fields": {"nombre": "Baterías"}
+  },
+  {
+    "model": "inventario.etiqueta",
+    "pk": 3,
+    "fields": {"nombre": "Cables"}
+  },
+  {
+    "model": "inventario.producto",
+    "pk": 1,
+    "fields": {
+      "taller": 1,
+      "modelo": "iPhone 12 Pantalla",
+      "descripcion": "Pantalla de repuesto para iPhone 12",
+      "cantidad": 10,
+      "cantidad_minima": 2,
+      "precio_costo": 25000,
+      "precio_venta": 40000,
+      "etiquetas": [1],
+      "fecha_ingreso": "2025-07-18T12:00:00Z"
+    }
+  },
+  {
+    "model": "inventario.producto",
+    "pk": 2,
+    "fields": {
+      "taller": 2,
+      "modelo": "Samsung S21 Batería",
+      "descripcion": "Batería original Samsung S21",
+      "cantidad": 5,
+      "cantidad_minima": 1,
+      "precio_costo": 12000,
+      "precio_venta": 20000,
+      "etiquetas": [2],
+      "fecha_ingreso": "2025-07-18T12:00:00Z"
+    }
+  },
+  {
+    "model": "inventario.producto",
+    "pk": 3,
+    "fields": {
+      "taller": 1,
+      "modelo": "Cable USB-C",
+      "descripcion": "Cable de carga USB-C universal",
+      "cantidad": 20,
+      "cantidad_minima": 5,
+      "precio_costo": 2000,
+      "precio_venta": 5000,
+      "etiquetas": [3],
+      "fecha_ingreso": "2025-07-18T12:00:00Z"
+    }
+  }
+] 
