@@ -11,7 +11,22 @@ Documentación completa de las APIs RESTful para el sistema de gestión de inven
 
 ## 🔐 Autenticación
 
-### Session Authentication (Recomendado para navegador)
+### JWT Authentication (Recomendado)
+```bash
+# 1. Login para obtener tokens
+curl -X POST "http://localhost:8000/api/usuarios/auth/login/" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "username": "admin",
+    "password": "password123"
+  }'
+
+# 2. Usar access_token en requests
+curl -X GET "http://localhost:8000/api/inventario/productos/" \
+  -H "Authorization: Bearer <access_token>"
+```
+
+### Session Authentication (Para navegador)
 ```bash
 # Primero hacer login en /admin/
 # Luego las cookies de sesión se usarán automáticamente
@@ -22,6 +37,8 @@ Documentación completa de las APIs RESTful para el sistema de gestión de inven
 curl -X GET "http://localhost:8000/api/inventario/productos/" \
   -H "Authorization: Basic $(echo -n 'username:password' | base64)"
 ```
+
+**Nota:** JWT es el método de autenticación recomendado para aplicaciones móviles y APIs. Ver documentación completa en `JWT_AUTHENTICATION.md`.
 
 ## 📦 Endpoints de Productos
 
@@ -532,17 +549,32 @@ curl -X DELETE "http://localhost:8000/api/inventario/etiquetas/4/" \
 
 ## 🔧 Ejemplos de Uso con JavaScript
 
-### Usando Fetch API
+### Usando Fetch API con JWT
 ```javascript
 // Configuración base
-const BASE_URL = 'http://localhost:8000/api/inventario';
-const credentials = btoa('admin:password');
+const BASE_URL = 'http://localhost:8000/api';
+let accessToken = null;
+
+// Login para obtener token
+async function login(username, password) {
+    const response = await fetch(`${BASE_URL}/usuarios/auth/login/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ username, password })
+    });
+    
+    const data = await response.json();
+    accessToken = data.access_token;
+    return data;
+}
 
 // Listar productos
 async function getProductos() {
-    const response = await fetch(`${BASE_URL}/productos/`, {
+    const response = await fetch(`${BASE_URL}/inventario/productos/`, {
         headers: {
-            'Authorization': `Basic ${credentials}`,
+            'Authorization': `Bearer ${accessToken}`,
             'Content-Type': 'application/json'
         }
     });
@@ -551,10 +583,10 @@ async function getProductos() {
 
 // Crear producto
 async function crearProducto(producto) {
-    const response = await fetch(`${BASE_URL}/productos/`, {
+    const response = await fetch(`${BASE_URL}/inventario/productos/`, {
         method: 'POST',
         headers: {
-            'Authorization': `Basic ${credentials}`,
+            'Authorization': `Bearer ${accessToken}`,
             'Content-Type': 'application/json'
         },
         body: JSON.stringify(producto)
@@ -564,10 +596,10 @@ async function crearProducto(producto) {
 
 // Adicionar stock
 async function adicionarStock(productoId, cantidad, motivo) {
-    const response = await fetch(`${BASE_URL}/productos/${productoId}/adicionar-stock/`, {
+    const response = await fetch(`${BASE_URL}/inventario/productos/${productoId}/adicionar-stock/`, {
         method: 'POST',
         headers: {
-            'Authorization': `Basic ${credentials}`,
+            'Authorization': `Bearer ${accessToken}`,
             'Content-Type': 'application/json'
         },
         body: JSON.stringify({ cantidad, motivo })
@@ -576,28 +608,38 @@ async function adicionarStock(productoId, cantidad, motivo) {
 }
 ```
 
-### Usando Axios
+### Usando Axios con JWT
 ```javascript
 import axios from 'axios';
 
 // Configuración base
 const api = axios.create({
-    baseURL: 'http://localhost:8000/api/inventario',
-    auth: {
-        username: 'admin',
-        password: 'password'
-    }
+    baseURL: 'http://localhost:8000/api'
 });
 
-// Listar productos
-const getProductos = () => api.get('/productos/');
+// Interceptor para agregar token automáticamente
+api.interceptors.request.use(config => {
+    const token = localStorage.getItem('access_token');
+    if (token) {
+        config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+});
 
-// Crear producto
-const crearProducto = (producto) => api.post('/productos/', producto);
+// Funciones de autenticación
+const authAPI = {
+    login: (credentials) => api.post('/usuarios/auth/login/', credentials),
+    logout: (refreshToken) => api.post('/usuarios/auth/logout/', { refresh_token: refreshToken }),
+    refresh: (refreshToken) => api.post('/usuarios/auth/refresh/', { refresh: refreshToken })
+};
 
-// Adicionar stock
-const adicionarStock = (productoId, cantidad, motivo) => 
-    api.post(`/productos/${productoId}/adicionar-stock/`, { cantidad, motivo });
+// Funciones de inventario
+const inventarioAPI = {
+    getProductos: () => api.get('/inventario/productos/'),
+    crearProducto: (producto) => api.post('/inventario/productos/', producto),
+    adicionarStock: (productoId, cantidad, motivo) => 
+        api.post(`/inventario/productos/${productoId}/adicionar-stock/`, { cantidad, motivo })
+};
 ```
 
 ## 📊 Monitoreo y Logs
@@ -616,7 +658,7 @@ curl -X GET "http://localhost:8000/admin/logs/loginventario/" \
 
 ## 🚀 Próximas Funcionalidades
 
-- [ ] Autenticación JWT
+- [x] Autenticación JWT ✅
 - [ ] Filtros avanzados por fecha
 - [ ] Exportación de datos a CSV/Excel
 - [ ] Notificaciones en tiempo real
